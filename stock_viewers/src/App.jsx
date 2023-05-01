@@ -22,12 +22,14 @@ function App() {
     setSymbol(symbol);
   };
 
-useEffect(() => {
-  if (symbol){
-const fetchData = async () => {
+  const fetchData = async () => {
     try {
       const response = await axios.get(`http://localhost:8000/api/stock/${symbol.value}/`);
+
       if (response && response.data){
+        if(typeof response.data === 'string'){
+          response.data=JSON.parse(response.data.replaceAll("NaN",null));
+        }
       const labels = response.data.map((d) => d.Date);
       const close = response.data.map((d) => d.Close);
       const volume = response.data.map((d) => d.Volume);
@@ -56,6 +58,9 @@ const fetchData = async () => {
       console.log(error);
     }
   };
+
+useEffect(() => {
+  if (symbol){
     fetchData();
 };
   }, [symbol]);
